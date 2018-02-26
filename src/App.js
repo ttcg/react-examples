@@ -6,17 +6,24 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      tasks: []  
+      tasks: [],
+      value: ''
     };
   }
 
-  handleAddTask = () => {
-    var txt = this.refs.txtTodo.value;
-    this.refs.txtTodo.value = '';
+  handleChange = (evt) => {
+    this.setState({
+      value: evt.target.value
+    });
+  }
+
+  handleAddTask = () => {    
+    
     this.setState((prevState) => {
-        prevState.tasks.push(txt);       
+        prevState.tasks.push(this.state.value);       
         return {
-          tasks: prevState.tasks
+          tasks: prevState.tasks,
+          value: ''
         };
       });
   }
@@ -32,7 +39,8 @@ export default class App extends Component {
         </div>
         <hr />  
         <div>
-          Type Task: <input type="textbox" ref="txtTodo" 
+          Type Task: <input type="textbox" value={this.state.value}
+            onChange={this.handleChange}
             onKeyPress={event => {            
                 if (event.key === 'Enter') {                  
                   this.handleAddTask();
