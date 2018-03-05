@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import logo from '../logo.svg';
 import './App.css';
 import TodoList from './TodoList'
+import TodoService from '../services/TodoService'
+
 
 export default class App extends Component {
   constructor(props) {
@@ -10,6 +12,17 @@ export default class App extends Component {
       tasks: [],
       value: ''
     };
+  }
+
+  componentDidMount() {
+    TodoService
+          .getAll()
+          .then((response) => {
+            this.setState({
+              tasks: response
+            })
+          });
+    
   }
 
   handleChange = (evt) => {
@@ -42,6 +55,17 @@ export default class App extends Component {
       });
   }
 
+  getTasks = () => {
+    TodoService
+          .getAll()
+          .then((response) => {
+            console.log(response);
+          });
+
+    
+  }
+
+
   render() {
     return (
       <div>
@@ -62,17 +86,14 @@ export default class App extends Component {
               }}
           />&nbsp;
           <input type="button" value="Add Task" id="btnAddTask" onClick={this.handleAddTask} />
+          <input type="button" value="Get Tasks" onClick={this.getTasks} />
         </div>           
+        
         <TodoList 
-          header="Todo List 1" 
+          header="Todo List" 
           tasks={this.state.tasks} 
           handleDelete={this.handleDelete}
-          />
-        <TodoList 
-          header="Todo List 2" 
-          tasks={this.state.tasks} 
-          handleDelete={this.handleDelete} 
-          />
+          />        
       </div>
     );
   }
