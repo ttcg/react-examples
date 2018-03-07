@@ -3,6 +3,7 @@ import logo from '../logo.svg';
 import './App.css';
 import TodoList from './TodoList'
 import TodoService from '../services/TodoService'
+import uuidv4 from 'uuid/v4'
 
 
 export default class App extends Component {
@@ -15,14 +16,7 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    TodoService
-          .getAll()
-          .then((response) => {
-            this.setState({
-              tasks: response
-            })
-          });
-    
+    this.loadTasks();
   }
 
   handleChange = (evt) => {
@@ -32,37 +26,57 @@ export default class App extends Component {
   }
 
   handleAddTask = () => {    
-    if (this.state.value) {
-      this.setState((prevState) => {
-          prevState.tasks.push(this.state.value);       
-          return {
-            tasks: prevState.tasks,
+    if (this.state.value) {      
+      const newItem = {
+        id: uuidv4(),
+        taskItem: this.state.value
+      }
+      TodoService
+        .add(newItem)
+        .then(res => {
+          this.loadTasks();
+          this.setState({
             value: ''
-          };
+          });
         });
     }
     else {
       alert('please type something to add');
     }
+  }  
+
+  loadTasks = () => {
+    TodoService
+      .getAll()
+      .then(res => {
+        this.setState({          
+          tasks: res
+        })
+      });    
+  }
+  
+  resetTasks = () => {
+    TodoService
+      .reset()
+      .then(res => {
+        this.loadTasks();
+      });  
   }
 
-  handleDelete = (i) => {
-    this.setState((prevState) => {        
-        prevState.tasks.splice(i, 1);
-        return {
-          tasks: prevState.tasks         
-        };
+  handleMark = (id, data) => {
+    TodoService
+      .mark(id, data)
+      .then(res => {
+        this.loadTasks();
       });
   }
 
-  getTasks = () => {
+  handleDelete = (id) => {
     TodoService
-          .getAll()
-          .then((response) => {
-            console.log(response);
+          .remove(id)
+          .then(res => {
+            this.loadTasks();
           });
-
-    
   }
 
 
@@ -85,14 +99,15 @@ export default class App extends Component {
                 }
               }}
           />&nbsp;
-          <input type="button" value="Add Task" id="btnAddTask" onClick={this.handleAddTask} />
-          <input type="button" value="Get Tasks" onClick={this.getTasks} />
-        </div>           
+          <input type="button" value="Add Task" id="btnAddTask" onClick={this.handleAddTask} />&nbsp;
+          <input type="button" value="Reset Data" onClick={this.resetTasks} />
+        </div>                  
         
         <TodoList 
           header="Todo List" 
           tasks={this.state.tasks} 
           handleDelete={this.handleDelete}
+          handleMark={this.handleMark}
           />        
       </div>
     );

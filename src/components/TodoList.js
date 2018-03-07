@@ -9,7 +9,10 @@ const TodoList = props => {
             {props.tasks.length ?
                 <ol>                     
                 {props.tasks.map((item, i) =>            
-                    <li key={i}>{item.taskItem}&nbsp;&nbsp;&nbsp;<a onClick={() => props.handleDelete(i)} className="deleteButton" title="Remove">X</a></li>
+                    <li key={item.id}>{item.taskItem}&nbsp;&nbsp;&nbsp;
+                        <a onClick={() => props.handleMark(item.id)} title="Mark as done"><i className="fa fa-check" style={{cursor: 'pointer', color: 'green'}} /></a>&nbsp;
+                        <a onClick={() => props.handleDelete(item.id)} title="Remove"><i className="fa fa-trash-alt" style={{cursor: 'pointer', color: 'red'}} /></a>
+                    </li>
                 )}
                 </ol>
                 : <h4>No items yet</h4>

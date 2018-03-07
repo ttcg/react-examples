@@ -1,5 +1,5 @@
 export default {	
     api: {
-	    url: 'http://localhost:62513/api/',
+	    url: 'http://35.195.110.121/api/',
     }
 };
