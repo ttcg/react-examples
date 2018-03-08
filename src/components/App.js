@@ -1,31 +1,41 @@
 import React, { Component } from 'react';
-import logo from '../logo.svg';
 import './App.css';
-import TodoList from './TodoList'
-import TodoService from '../services/TodoService'
-import uuidv4 from 'uuid/v4'
+import Header from './Header';
+import TodoList from './TodoList';
+import TodoService from '../services/TodoService';
+import uuidv4 from 'uuid/v4';
 
 
 export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = { 
-      tasks: [],
-      value: ''
+      items: [],
+      value: '',
+      editItem: null
     };
   }
 
   componentDidMount() {
-    this.loadTasks();
+    this.loadItems();
   }
 
-  handleChange = (evt) => {
+  handleTextChange = (e) => {
     this.setState({
-      value: evt.target.value
+      value: e.target.value
     });
   }
 
-  handleAddTask = () => {    
+  handleTextKeyPress = (e) => {    
+    if (e.key === 'Enter') {
+      if (this.state.editItem)
+        this.handleUpdateItem();
+      else
+        this.handleAddItem();
+    }
+  }
+
+  handleAddItem = () => {    
     if (this.state.value) {      
       const newItem = {
         id: uuidv4(),
@@ -34,10 +44,7 @@ export default class App extends Component {
       TodoService
         .add(newItem)
         .then(res => {
-          this.loadTasks();
-          this.setState({
-            value: ''
-          });
+          this.loadItems();          
         });
     }
     else {
@@ -45,21 +52,23 @@ export default class App extends Component {
     }
   }  
 
-  loadTasks = () => {
+  loadItems = () => {
     TodoService
       .getAll()
       .then(res => {
         this.setState({          
-          tasks: res
+          items: res,
+          editItem: null,
+          value: ''
         })
       });    
   }
   
-  resetTasks = () => {
+  resetItems = () => {
     TodoService
       .reset()
       .then(res => {
-        this.loadTasks();
+        this.loadItems();
       });  
   }
 
@@ -67,49 +76,84 @@ export default class App extends Component {
     TodoService
       .mark(id, data)
       .then(res => {
-        this.loadTasks();
+        this.loadItems();
       });
   }
 
-  handleDelete = (id) => {
+  handleDeleteItem = (id) => {
     TodoService
-          .remove(id)
-          .then(res => {
-            this.loadTasks();
-          });
+      .remove(id)
+      .then(res => {
+        this.loadItems();
+      });
   }
 
+  handleEditItem = (item) => {
+    this.setState({
+      editItem: item,
+      value: item.taskItem
+    })
+  }
+
+  handleUpdateItem = () => {
+    if (this.state.value) {
+      var obj = this.state.editItem;
+      obj.taskItem = this.state.value;
+
+      TodoService
+        .update(obj.id, obj)
+        .then(res => {
+          this.loadItems();
+        });    
+    }
+    else {
+      alert('please type something to update');
+    }
+  }
+
+  handleCancelUpdate = () => {
+    this.setState({
+      editItem: null,
+      value: ''
+    })
+  }
 
   render() {
+    const { items, value, editItem } = this.state;
+
     return (
-      <div>
-        <div className="App">        
-          <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Todo</h1>
-        </header>
-        </div>
-        <hr />  
-        <div>
-          Type Task: <input type="textbox" value={this.state.value}
-            onChange={this.handleChange}
-            onKeyPress={event => {            
-                if (event.key === 'Enter') {                  
-                  this.handleAddTask();
-                }
-              }}
+      <div>  
+        <Header />       
+        <div style={{marginLeft: 30}}>
+          Type Task: <input type="textbox" value={value}
+            onChange={this.handleTextChange}
+            onKeyPress={this.handleTextKeyPress}
           />&nbsp;
-          <input type="button" value="Add Task" id="btnAddTask" onClick={this.handleAddTask} />&nbsp;
-          <input type="button" value="Reset Data" onClick={this.resetTasks} />
-        </div>                  
+          { editItem &&
+            <span>
+              <input type="button" value="Update Task" onClick={this.handleUpdateItem} />&nbsp;
+              <input type="button" value="Cancel" onClick={this.handleCancelUpdate} />            
+            </span>
+          }
+          {
+            !editItem && 
+              <input type="button" value="Add Task" onClick={this.handleAddItem} />            
+          }
         
-        <TodoList 
-          header="Todo List" 
-          tasks={this.state.tasks} 
-          handleDelete={this.handleDelete}
-          handleMark={this.handleMark}
+          <div style={{clear: 'both'}}/>
+          
+          <TodoList 
+            header="Todo List" 
+            items={items} 
+            handleDeleteItem={this.handleDeleteItem}
+            handleMark={this.handleMark}
+            handleEditItem={this.handleEditItem}
           />        
-      </div>
-    );
+
+          <div style={{clear: 'both'}}/>
+          <input type="button" value="Click here to Reset test data" onClick={this.resetItems} />
+        </div>                  
+      </div>      
+    );  
   }
 }

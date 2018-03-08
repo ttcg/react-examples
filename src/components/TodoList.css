@@ -2,17 +2,18 @@
     border: 1px solid black;
     padding: 5px;
     margin: 20px;
-    width: 300px;
+    width: 400px;
     float: left;
-}
-
-.deleteButton {
-    color: red;
-    font-size: larger;    
-    text-decoration: none;
-    cursor: pointer;
 }
 
 .doneItem {
     text-decoration: line-through;
+}
+
+.todoItem {
+    line-height: 25px;
+}
+
+.fa, .fab {
+    cursor: pointer;
 }
