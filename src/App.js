@@ -11,14 +11,19 @@ export default class App extends Component {
     };
   }
 
-  handleChange = (evt) => {
+  handleTextChange = (evt) => {
     this.setState({
       value: evt.target.value
     });
   }
 
+  handleTextKeyPress = (evt) => {             
+    if (evt.key === 'Enter') {                  
+      this.handleAddTask();
+    }              
+  }
+
   handleAddTask = () => {    
-    
     this.setState((prevState) => {
         prevState.tasks.push(this.state.value);       
         return {
@@ -39,15 +44,13 @@ export default class App extends Component {
         </div>
         <hr />  
         <div>
-          Type Task: <input type="textbox" value={this.state.value}
-            onChange={this.handleChange}
-            onKeyPress={event => {            
-                if (event.key === 'Enter') {                  
-                  this.handleAddTask();
-                }
-              }}
+          Type Task: 
+          <input type="textbox" 
+            value={this.state.value}
+            onChange={this.handleTextChange}
+            onKeyPress={this.handleTextKeyPress}
           />&nbsp;
-          <input type="button" value="Add Task" id="btnAddTask" onClick={this.handleAddTask} />
+          <input type="button" value="Add Task" onClick={this.handleAddTask} />
         </div>   
         <div>
           <ol>
