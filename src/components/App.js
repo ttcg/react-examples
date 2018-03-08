@@ -12,10 +12,16 @@ export default class App extends Component {
     };
   }
 
-  handleChange = (evt) => {
+  handleTextChange = (evt) => {
     this.setState({
       value: evt.target.value
     });
+  }
+
+  handleTextKeyPress = (evt) => {             
+    if (evt.key === 'Enter') {                  
+      this.handleAddTask();
+    }              
   }
 
   handleAddTask = () => {    
@@ -43,6 +49,9 @@ export default class App extends Component {
   }
 
   render() {
+
+    const {tasks, value} = this.state;
+
     return (
       <div>
         <div className="App">        
@@ -53,24 +62,22 @@ export default class App extends Component {
         </div>
         <hr />  
         <div>
-          Type Task: <input type="textbox" value={this.state.value}
-            onChange={this.handleChange}
-            onKeyPress={event => {            
-                if (event.key === 'Enter') {                  
-                  this.handleAddTask();
-                }
-              }}
+          Type Task: 
+          <input type="textbox" 
+            value={value}
+            onChange={this.handleTextChange}
+            onKeyPress={this.handleTextKeyPress}
           />&nbsp;
           <input type="button" value="Add Task" id="btnAddTask" onClick={this.handleAddTask} />
         </div>           
         <TodoList 
           header="Todo List 1" 
-          tasks={this.state.tasks} 
+          tasks={tasks} 
           handleDelete={this.handleDelete}
           />
         <TodoList 
           header="Todo List 2" 
-          tasks={this.state.tasks} 
+          tasks={tasks} 
           handleDelete={this.handleDelete} 
           />
       </div>
