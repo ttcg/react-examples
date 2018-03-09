@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import './App.css';
 import Header from './Header';
 import TodoList from './TodoList';
+import Loading from './LoadingSpinner';
 import TodoService from '../services/TodoService';
 import uuidv4 from 'uuid/v4';
+import './App.css';
 
 
 export default class App extends Component {
@@ -12,18 +13,19 @@ export default class App extends Component {
     this.state = { 
       items: [],
       value: '',
-      editItem: null
+      editItem: null,
+      loading: false
     };
   }
 
-  componentDidMount() {
-    this.loadItems();
-  }
+  componentDidMount = () => this.loadItems();
+  
 
   handleTextChange = (e) => {
     this.setState({
       value: e.target.value
     });
+    
   }
 
   handleTextKeyPress = (e) => {    
@@ -41,11 +43,14 @@ export default class App extends Component {
         id: uuidv4(),
         taskItem: this.state.value
       }
-      TodoService
-        .add(newItem)
-        .then(res => {
-          this.loadItems();          
-        });
+      
+      this.setState({ loading: true }, () => {        
+        TodoService
+          .add(newItem)
+          .then(res => {
+            this.loadItems();          
+          });        
+        });      
     }
     else {
       alert('please type something to add');
@@ -59,7 +64,8 @@ export default class App extends Component {
         this.setState({          
           items: res,
           editItem: null,
-          value: ''
+          value: '',
+          loading: false
         })
       });    
   }
@@ -119,40 +125,44 @@ export default class App extends Component {
   }
 
   render() {
-    const { items, value, editItem } = this.state;
+    const { items, value, editItem, loading } = this.state;
 
     return (
       <div>  
-        <Header />       
-        <div style={{marginLeft: 30}}>
-          Type Task: <input type="textbox" value={value}
-            onChange={this.handleTextChange}
-            onKeyPress={this.handleTextKeyPress}
-          />&nbsp;
-          { editItem &&
-            <span>
-              <input type="button" value="Update Task" onClick={this.handleUpdateItem} />&nbsp;
-              <input type="button" value="Cancel" onClick={this.handleCancelUpdate} />            
-            </span>
-          }
-          {
-            !editItem && 
-              <input type="button" value="Add Task" onClick={this.handleAddItem} />            
-          }
-        
-          <div style={{clear: 'both'}}/>
+        <Header />              
+          <div style={{marginLeft: 30}}>
+            Type Task: <input type="textbox" value={value}
+              onChange={this.handleTextChange}
+              onKeyPress={this.handleTextKeyPress}
+            />&nbsp;
+            { editItem &&
+              <span>
+                <input type="button" value="Update Task" onClick={this.handleUpdateItem} />&nbsp;
+                <input type="button" value="Cancel" onClick={this.handleCancelUpdate} />            
+              </span>
+            }
+            {
+              !editItem && 
+                <input type="button" value="Add Task" onClick={this.handleAddItem} />            
+            }
           
-          <TodoList 
-            header="Todo List" 
-            items={items} 
-            handleDeleteItem={this.handleDeleteItem}
-            handleMark={this.handleMark}
-            handleEditItem={this.handleEditItem}
-          />        
+            <div style={{clear: 'both'}}/>
+            
+            <TodoList 
+              header="Todo List" 
+              items={items} 
+              handleDeleteItem={this.handleDeleteItem}
+              handleMark={this.handleMark}
+              handleEditItem={this.handleEditItem}
+            />        
 
-          <div style={{clear: 'both'}}/>
-          <input type="button" value="Click here to Reset test data" onClick={this.resetItems} />
-        </div>                  
+            <div style={{clear: 'both'}}/>
+            <input type="button" value="Click here to Reset test data" onClick={this.resetItems} />
+            <p>
+              It stores and loads data from the services hosted in GCP.  <a href="http://35.195.110.121/swagger" target="_blank" rel="noopener noreferrer">Link</a>
+            </p> 
+          </div>        
+          <Loading loading={loading}/>
       </div>      
     );  
   }
