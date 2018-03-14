@@ -128,7 +128,7 @@ export default class App extends Component {
     const { items, value, editItem, loading } = this.state;
 
     return (
-      <div>  
+      <React.Fragment>
         <Header />              
           <div style={{marginLeft: 30}}>
             Type Task: <input type="textbox" value={value}
@@ -163,7 +163,7 @@ export default class App extends Component {
             </p> 
           </div>        
           <Loading loading={loading}/>
-      </div>      
+      </React.Fragment>  
     );  
   }
 }
