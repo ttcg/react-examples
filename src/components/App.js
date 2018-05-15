@@ -159,7 +159,7 @@ export default class App extends Component {
             <div style={{clear: 'both'}}/>
             <input type="button" value="Click here to Reset test data" onClick={this.resetItems} />
             <p>
-              It stores and loads data from the services hosted in GCP.  <a href="http://35.195.110.121/swagger" target="_blank" rel="noopener noreferrer">Link</a>
+              It stores and loads data from the services hosted in GCP.  <a href="http://35.187.96.68/swagger" target="_blank" rel="noopener noreferrer">Link</a>
             </p> 
           </div>        
           <Loading loading={loading}/>
